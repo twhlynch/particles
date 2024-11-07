@@ -144,14 +144,22 @@ canvas.addEventListener("touchmove", (event) => {
 });
 
 let deviceorientation = "";
-try {
-    let gyroscope = new Gyroscope({ frequency: 60 });
-    gyroscope.addEventListener("reading", (e) => {
-        deviceorientation = gyroscope.x + " " + gyroscope.y + " " + gyroscope.z;
-    });
-    gyroscope.start();
-} catch (error) {
-    console.error("Gyroscope not supported:", error);
+function tilt(r) {
+    if (r[0] == null || r[1] == null || r[0] == undefined || r[1] == undefined) return;
+    deviceorientation = `beta: ${r[0].toFixed(2)}, gamma: ${r[1].toFixed(2)}`;
+}
+if (window.DeviceOrientationEvent) {
+    window.addEventListener("deviceorientation", (e) => {
+        tilt([e.beta, e.gamma]);
+    }, true);
+} else if (window.DeviceMotionEvent) {
+    window.addEventListener('devicemotion', (e) => {
+        tilt([e.acceleration.x * 2, e.acceleration.y * 2]);
+    }, true);
+} else {
+    window.addEventListener("MozOrientation", (e) => {
+        tilt([e.x * 50, e.y * 50]);
+    }, true);
 }
 
 let lastFrameTime = 0;
