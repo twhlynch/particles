@@ -130,11 +130,29 @@ canvas.addEventListener("mousemove", (event) => {
     mousePos.x = event.clientX;
     mousePos.y = event.clientY;
 });
+canvas.addEventListener("touchstart", (event) => {
+    mousePos.x = event.touches[0].clientX;
+    mousePos.y = event.touches[0].clientY;
+    mouseDown = true;
+});
+canvas.addEventListener("touchend", (event) => {
+    mouseDown = false;
+});
+canvas.addEventListener("touchmove", (event) => {
+    mousePos.x = event.touches[0].clientX;
+    mousePos.y = event.touches[0].clientY;
+});
 
 let deviceorientation = "";
-window.addEventListener("deviceorientation", (event) => {
-    deviceorientation = `${event.alpha} : ${event.beta} : ${event.gamma}`;
-});
+try {
+    let gyroscope = new Gyroscope({ frequency: 60 });
+    gyroscope.addEventListener("reading", (e) => {
+        deviceorientation = gyroscope.x + " " + gyroscope.y + " " + gyroscope.z;
+    });
+    gyroscope.start();
+} catch (error) {
+    console.error("Gyroscope not supported:", error);
+}
 
 let lastFrameTime = 0;
 ctx.font = '10px Arial';
